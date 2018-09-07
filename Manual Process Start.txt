@@ -1,0 +1,7 @@
+is any prosess is DOWN in s
+
+1)check the pid of that process
+ps -ef | grep -i "name of script for starting that process[can be found by pressing s command]"
+
+2)ls -ltr *.pid
+3)manually update the pid for that process that we got from forst step.
