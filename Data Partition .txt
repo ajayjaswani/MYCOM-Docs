@@ -1,0 +1,58 @@
+ETL->
+
+/opt/mycom/data/etl/ttk/diskvmr => find ./ -name *2018* | xargs rm -v => 
+
+
+
+======================================
+For ETL pARTITION->
+
+1) fIRST OF AL WHAT IS THE QUEUE IN THE SERVER
+2)DO NOT TOUCH THIS PARTITION UNLESS AND UNTIL DISK PARTITION IS MORE THAN 90%
+3)(I)GO TO /ETL/FLOW/PROCESSED
+  (II)INSIDE THAT DAY WISE FOLDER WILL BE THERE
+  (III)DELETE ALL FOLDERS EXCEPT FOR TODAY AND YESTERDAY
+4)GO TO DATA/ETL/TTK/DISKVMR PARTITION
+  (I)LS AND DO du -sh *[to check which vti folder is consuming maximum space]
+  (ii)go to the folder of that vti which is consuming maximum space
+  (iii) now before deleting any thing do check for current jmx queue
+  (iv) if queue is less than 200 leave last 4 hour files and delete rest of them
+  (v) if q is between 200-1000 leave last 8 hour files and delete rest
+  (vi) if q is more than 1000 leave at least 1 day file and delete rest
+
+
+Data Partition->
+
+1)Clean Junk->
+	/opt/mycom/data/monitoring/alarm 
+	leave today's and delete everything
+2) /opt/mycom/data/archive/V2 => In this path you can delete everything[specific to this folder in data partition only for others you can not delete everything]
+
+"so basically the retention is 4 days for ERCS & 7days for nokia"
+"/opt/mycom/data/ericsson/enodeb/xml3gpp_nl16b/
+
+pm1/RAJ_LTE" go to this path and delete files for day -1
+
+
+====================================================================================================================================
+
+For reducing /opt/mycom Partition->
+
+1)Go to /opt/mycom/shell/support/VIL_Scripts
+2)run below mentioned script
+logs_zip__and_move.sh
+3)or else deletwe this file=>
+/opt/mycom/shell/support
+ll predefined_report.result
+
+====================================================================================================================================
+
+FOR /opt/mycom/data/backup partition ->
+
+this partition consists of RMAN Backup files and is taken care by DB Team
+
+====================================================================================================================================
+
+FOR /DailBackup Partition ->
+
+This Partition consistes of backup files from previous day.From this partiton DB/Storage team takes backup.This partiton is not taken care of by DB/Storage Team and can not be reduced further. only way to reduce partition is to increase disk space.
