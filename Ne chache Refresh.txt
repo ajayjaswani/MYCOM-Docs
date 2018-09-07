@@ -1,0 +1,7 @@
+sudo su - oracle
+sqlplus proptima/proptima
+update attr_import_session set import_date=import_date+1/24 where import_date in (select max(import_date) from attr_import_session WHERE idf_import_session_status<=3 AND end_date >= start_date);
+COMMIT;
+exit;
+
+egrep "starting loading NE Hierarchy cache|PERF completed loading NEHierarchyCache" /opt/mycom/logs/proptimaserver.<date>*.*
