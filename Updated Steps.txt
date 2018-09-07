@@ -1,0 +1,657 @@
+MOBAXTERM
+
+ssh mycom@server ip address
+pwd
+shell
+ls
+
+==========================================================================================================================================================
+
+VIM-
+start->ctrl+:+1
+last->shift+g
+
+
+==========================================================================================================================================================
+
+Deploying a VTI-
+
+1)/opt/mycom/exe
+2)ls + command->./LicMgrClient status
+3)shell
+4)cd database
+5)ls one shell file is there named "DeployVTI.sh"
+Installed Release/Deployed Release->first we need to install the packages of a vti brfore we caN DEPLOY it
+6)to deploy a vti-nohup ./DeployVTI.sh -l VTIname &      (DRY RUN MODE)
+nohup means->since we are running in network mode so incase if any network change/issue is there then that should not affect the deployment process of VTI
+Gives output in nohup file and to read that fil
+WE ALWAYS NEED TO DEPLOY VTI IN DRY RUN MODE FIRST AND NOT IN COMMIT MODE->AFTER CHECKING FOR ERRORS IN NOHUP FILE ONLY WE SHOULD DEPLOY VTI IN COMMIT MODE
+7)tail -f nohup.out
+
+==========================================================================================================================================================
+
+DATA ENABLING FOR PARTICULAR VTI-
+
+1)LOGIN INTO PARTICULAR SERVER
+First check the data at ems server(intermediate server which contains raw files)
+	1)sftp mycom@IP Address
+	2)cd source path in ems server
+	3)ls
+	4)latest modified file
+	5)ls
+	DATA SHOULD BE THERE AND ALSO IN RIGHT FORMAT
+	6)BYE(GET OUT OF SFTP)
+2)SERVER
+3)LS
+4)vi FtpMediation.site.properties
+FtpMediation.site.properties=>>
+	for encrypting passwords
+		1)shell
+		2)ls
+		3)cd suport
+		4)ls
+		5)./generate_password.sh PASSWORD
+		6)shell
+after putting a single entry restart mycom as extract process
+5)s
+TO STOP A PROCESS
+./PROCESSNAME.sh STOP
+TO START A PROCESS
+nohup .PROCESSNAME.sh start &(nohup-no hangup)
+
+
+==========================================================================================================================
+SEVENQUERIES=>cd  shell =>cd support	
+
+==========================================================================================================================
+proactive monitoring
+
+report/daily monitiring/proactive monitoring
+
+pr07=>report/yogesh s/ericsson lte test
+ for nokia vendor check for ne_release(bottom left edit attribute list)
+===========================================================================================================================================
+
+checking if data is coming from our end-
+
+1) go to putty
+2) data/vendorname/technology/
+
+*for nokia NEs search for CODN attributes and then grep it while listing	
+
+
+if data is coming from putty but not reflecting on client then-
+
+either grep fot that ne in files coming from putty
+or get the counter from client and check whether it's value is coming or not-
+to get the counter value
+1)go to calculation column
+2)drill down it and add raw level components
+
+
+zgrep -A 50 'ne name/codn name' *time* | grep 'counter value' |sort | uniq (even this is not fool proof since we dont know by what name is counter coming in raw file)
+
+the do one thing, go to calculation =>properties=>a number might be there=>prefix 'c'to that number and then grep that number by replacng counter value in above mentioned command
+ ============================================================================================================================================
+to check for nokia KPI Value
+1)go to reports
+2)go to vishalS folder
+3)look for payload report according to your technology
+
+
+================================================================================================================================================
+Gather details of Oss =>
+
+1)Putty
+2)opt/mycom/n/server/res/xlgeo-shared
+3)ll FtpMediation*
+4)go to ftp mediation file of your particular server
+5)vi that file and get the details of oss
+6)decrypt the password(using .decryptPassword script in support path)
+7)ssh username of server@ip address of seever
+8)enter the decrypted password
+9)cd file name
+10)check from when the data is not coming or missing
+
+
+=====================================================================================================================
+
+DNA Steps:
+
+Create .csv file in below format
+NE,dna_name
+
+Save file in DNA Path
+/opt/mycom/n/nelist
+
+10.84.228.205
+DNA attributes:
+ercs-cell -> CellName.Cell2
+ercs-3g -> UtranCellId
+ercs-4g -> Ericsson_4G_NAME
+nokia-segmnet->segmentname
+hwi -fddcell > CELLNAME.FddCell
+hwi -cell > CELLName.Cell
+hwi - ecell > Huaw_4G.NAME
+nokia-cell > CellName
+noki-fddcell->Nokia_3G.NAME
+nokia e cell- Nokia_4G.NAME
+==================================================================================================================================================
+
+Enrich steps:
+FOR NEW FILES
+/opt/mycom/data/enrichment/input
+1.Create AE           (Importation Database/Entities/n entities/New)
+2.Discover Atr        (Utilities/Exploration/Discover Attributes)
+3.Change datatype     (Importation Definition/Attribute)
+4.Cal tree            (Presentation/calc.tree/mapped/n/enrichment)
+5.Notify              Before doing this step, Check whether any n session is running (Utilities/Notify Metadata Change)
+
+
+FOR ALREADY UPDATING
+/opt/mycom/data/enrichment/input
+grep by file name(POI DETAILS/MSC_CGR_NODE)
+vi that file
+edit that file with given details
+ 
+==============================================================================
+
+CNA Steps:
+1. Open User Manager
+2. Features/CNA Editor
+3. Add
+4. Manage Dimentions/Tool Pallette/Conditional NW areas/Create Node
+===============================================================================
+
+
+Scheduling:
+
+scheduling is done in user manager only
+
+
+=============================================================================================
+
+Mail id addition/zip reports circulation removal
+(path=>mail id=>zip report=>folder)
+path-home mycom
+grep -i  "file name" *.txt
+usually first file in the scheduled report path will be the file
+ll the file name
+then search for the script that is scheduling that file 
+grep -i "file name" *.sh
+will give the name of that script
+now go to crontab -e and find the scheduled script with that name and comment it if you have to stop circulating the report
+
+crontab -e | grep script name
+===================================================================================================
+
+To execute a zip report-
+
+go to home mycom
+grep your file name
+
+==================================================================================================
+
+to check Queue-
+
+type jmx anywhere no specific path in putty
+
+HEADER FORMAT OF JMX LOG
+datetime,extract-transform,transform-load,load-currentWrite,load-lateWrite,aggregation(pre aggregation)
+
+===========================================================================================================================================
+
+HEALTH CHECKUP-
+
+1)df -h=>used space should be less than 85%
+2)s=>all processes should be up
+3)JMX=>check that there should not be any queue(first five column should be zero)
+4)Current data loading=> check for reports named "Core Alarms Template" and "Core Alarms Template NSN" in reports path and check that data is reflecting fine or not
+5)top => to check load average(forst row top right)(values should be less than 20)
+6)check for n session
+7)Update check=>
+8)DEACTIVATED VTI CHECK=>go to xlgeo-shared path=>grep file named "ETL.DIMODEL.DeactivateDatasource.DS.nkia_bss_xmlascii_o5.4cd1.CM1=true
+ETL.DIMODEL.DeactivateDatasource.DS.nkia_bss_xmlascii_o5.4cd1.PM1=true" check if their value is true or not.
+9)CM FILE UPDATED->
+(i)FOR PR01 ALONE-(ALSO CALLED ENRICHMENT UPDATE)
+	(A)go to path /opt/mycom/data/enrichment/2G_ATT_ENRICHMENET_FILE
+	(B)U WILL GET CIRCLEWISE FOLDER
+	(C) UNDER THAT DATE WISE FOLDER
+	(D)IF TODAY'S DATE IS NOT PRESENT THEN CM FILE IS NOT UPDATED FOR TODAY
+	(E)I FOLDER IS PRESENT THEN GO INSIDE THAT FOLDER AND JUST LL
+(ii)FOR ALL OTHER SERVERS-
+	(A)GO TO PATH-CD /OPT/MYCOM/DATA/ERICSSON/UTRAN/AML3GPP_NW13B/CM1
+	(B)THERE WILL BE CIRCLE WISE FOLDER
+	(C)JUST GO THERE AND DO LL
+
+	
+====================================================	
+
+MDDS ==> Manage users client and report computation
+MDDS1==> Manage scheduled reports, KPI preaggregation, alarm computation.
+
+To increase MDDS memory
+
+MDDS Logs ==>Proptimaserver
+MDDS1 Logs ==>Proptimaserver1
+
+cd /opt/mycom/shell
+vi admin.auto.conf
+
+Use ReconfMDDS.sh to change memory setting for MDDS
+MDDS ==>
+XmsMDDB=Xms3072M
+XmsMDDB=Xms3072M
+
+MDDS1==>
+XmsMDDB1=Xms1024M
+XmsMDDB1=Xms1024M
+
+To increase memory utilization for E,T,L,W, Scheduleengine, tomcat, alarm engine, preaggregation formula, etc
+Vi admin.site.conf
+
+====================================================================================================================
+OSS Integration/new node integration
+
+go to ftp mediation file path on NO1 server only no other server
+vi the ftp mediation file
+search for the given ip addres in the file
+copy that block in nnotepad
+select a unique source id
+replace existing source id in notepad with unique id (generally look at last source id in ftp file and select the next count to that source id as your unique source id)
+in notepad-replce source existing source directory with given source dir and same with destination directory(optional)
+in notepad replace filter reg exp for given ne id(starts with M.... just replace that)
+copy that text block and paste it in your ftp mediation file
+
+                               ||
+			       \/
+
+And to add new omc then
+go to /opt/mycom/data/noc_roc path
+ll (vendor wise ext file will be there)(Format-vendor(tab)network(tab)ROC)
+go to you vendor specific file and vi that file
+at the end of that file if your omc is noth there the at end of filr add your omc
+ 
+
+=========================================================================================================================
+Miniscad adit
+
+shell 
+suport 
+./MiniAudit.sh and select option 3
+gives the memory being used by mycom process
+
+========================================================================================================================
+
+To increase time/days in Client->
+1)go to file
+2)global context
+3)increase the time out there
+==========================================================================================================================
+
+TO START OR STOP A PROCESS->
+
+1)GO TO SHELL
+2)LS *.SH
+IN ORDER TO START/STOP ALL PROCESSES OF A SERVER->
+SHELL>LS MYCOMPROCESSES.SH>./MYCOMPROCESSES.SH START/STOP
+
+===============================================================================================================================
+
+BMI
+
+ls etlexpmx_LNCEL_20171213000828_2000410.xml.gz | /opt/mycom/shell/support/BackgroundManualImportWithFileList3.sh
+
+find -name etlexpmx_LNCEL_2017121300\* | /opt/mycom/shell/support/BackgroundManualImportWithFileList3.sh
+========================================================================================================================
+
+for data not coming in MSC=>
+to get the KPI value for nokia vendor search all for core_alarms report to get the KPI Value
+=========================================================================================================================
+
+SRAS->
+
+IP-10.19.72.30
+PORT-48152
+
+
+1) list HPOSS-
+2)SELECT THE PROCESS YOU WANT TO OPEN
+3)su - mycom
+4)Password
+5) you have been logged in to that system
+
+=========================================================================================================================================
+NE CACHE REFRESH->
+
+sudo su - oracle
+sqlplus proptima/proptima
+update attr_import_session set import_date=import_date+1/24 where import_date in (select max(import_date) from attr_import_session WHERE idf_import_session_status<=3 AND end_date >= start_date);
+COMMIT;
+
+=======================================================================================================================================
+Schedule Report Availability->
+
+1)check corsnocpmse mail for schedule report count for that day
+2)if any server is having many failed report then go to putty path->logs>ll ScheduleEngine*
+3)vi that day's loig file
+4)or grep  "Error" in that day's log file
+5)analyze why we are getting error
+[Not in all case]
+go to path in client and check whether the report is there in the path or not may be that can be the reason why the report is not getting executed[if the  
+report is present in the path then the reason could be that either the report is corrupted[if so we have to take a backup of it and get a copy of it from DB]
+ or the report could be blank or not present in the path]
+
+========================================================================================================================================
+
+DI RESTART ->
+
+1) GO TO PATH SHELL->SUPPORT
+2) SELECT MINIADIT.SH SCRIPT
+3) run the script
+4) select the option od DI restart 
+
+MDDS restart is used for restarting the client
+
+==============================================================================================================================================
+FLAT FILES->
+
+PATH[SERVER->XLGEO-SHARED->grep 'flatfiles' *PR03.properties]
+
+ONCE THE DATA COMING FROM  PM FILES IS GONE THROUGH ETL process it is stored in form of flat files(with it's retention period) 
+In order to change the retention period just vi that file name that u get after u run above commnad and just change the retention period of that file
+
+CM FILE DATA IS STORED IN DB AFTER 
+IG SESSION 
+===============================================================================================================
+
+CIRCUIT GROUP PATH IN PROPTIMA CLIENT->
+CIRCUIT CORE->CORE COMMON->CIRCUIT_GROUP[USED WHILE DOING ENRICHMENT IN NO1]
+
+=====================================================================================================================================================
+To Reduce Disk Partition-
+
+Data->Find and delete raw files:
+
+1)Clean Junk->
+              /opt/mycom/data/monitoring/alarm 
+              leave today's and delete everything
+2) /opt/mycom/data/archive/V2 => In this path you can delete everything[specifiv to this folder in data partition only for others you can not delete everything]
+
+"so basically the retention is 4 days for ERCS & 7days for nokia"
+"/opt/mycom/data/ericsson/enodeb/xml3gpp_nl16b/pm1/RAJ_LTE" go to this path and delete files for day -1
+
+Command to delete- [modify time as per retention period]
+
+find /opt/mycom/data/nokia/bss/xmlxml_o5.5/pm1 -mtime +5 | xargs ls –v
+find /opt/mycom/data/nokia/bss/xmlxml_o5.5/pm1 -mtime +5 | xargs rm -v
+
+ETL->
+
+/opt/mycom/data/etl/ttk/diskvmr => find ./ -name *2018* | xargs rm -v => 
+
+======================================================================================================================================
+
+HOW TO ADD MEMORY FOR A PROCESS->
+
+1) SHELL
+2)LL *.CONF
+3)admin.site.conf[to add decrease memory for[client,icm,load,DIMgr,Tomcat,Transform,Extract,Alarm,and all other process ]
+4)admin.auto.conf[to add memory for MDDS,MDDS1]
+We usually add memory when there is a recommendation as per result of MiniscadAudit Script[tis script gives the memory what should be allocated for that 
+process so basically take difference of memory suggestion and memory that is allocated for that process and add that much memory to processes]
+
+=================================================================================================================================
+File name to check all the alias[with complete alias definition]->
+
+/home/mycom
+vi .bash_profile[we can open this file only by logging through mycom user]
+
+
+==============================================================================================================================================
+
+VTT Preview->
+
+
+./PreviewICM.sh -t <NE|ATTRIBUTE|COUNTER> -d time(201511272220) -f 'ENTITY:ID(ICM Preview)
+
+Ex - ./PreviewICM.sh -t ATTRIBUTE -d 201610211000 -f'ENTITY:93455149'
+
+under shell/vtt
+1> run below command with entity ID from ICM (ENTITY:93455240) 
+
+./PreviewICM.sh -t COUNTER -d 201611151000 -f'ENTITY:93455240'
+2> Later on copy .txt file from filezilla to your desktop(path will be based on your VTI name)
+
+ /opt/mycom/data/vtt/preview/nkia_utran_xmlxml_o5.4cd1/201611151929
+3> open .txt file do ctl+a and ctl+c and paste it in excel. you will get a clear format in excel sheet
+4> Now copy all id in notepad++ and search multiple id's in client.
+5> id will be the attribute for the same
+6> you need to custom your string in "ID" column of client.
+
+===============================================================================================================================================
+
+To Trigger n Session From Putty->
+
+Start n session:
+go to shell/support
+./Triggernsession date VTI &
+./Triggernsession date & ==> For all VTIs
+
+If n session starts for future date,
+- Restart mycomdaie.sh
+- grep for "engine" in DIMgr log to check it started or not
+- After that check n session start/finish in DIMgr logs
+
+=========================================================================================================================================
+
+path for "Daily Schedule Report Status" script->
+
+1)/home/mycom/support/scripts/Onsite_Scripts/Report_Check/Daily_Report_Success.sh
+ 
+=====================================================================================================================================
+
+Manual Aggregation Steps->
+
+ ./ManualAggregation.sh -d ercs_utran_xml3gpp_nw14b -g 1440 -e 201608210000 -i
+ IMP command 
+./ManualAggregation.sh ercs_bss_asn1_ng15b -g 1440 -e 201612042300  monday's date if 28th Nov to 4th Dec then u have to trigger it for 4th Dec 23rd hour
+##ercs utran Daily aggregation
+./ManualAggregation.sh -d ercs_utran_xml3gpp_nw14b -g 60 -e 201608210000 -i &
+
+./ManualAggregation.sh -d nkia_bss_xmlascii_o5.4cd1 -g 60 -e 201605110000 for current day
+
+./ManualAggregation.sh -d base_preaggr_mddsapi_ov1 -g 60 -e 201510210000 for current day
+
+./ManualAggregation -d <VTI_Name> -e <end date> -g <granularity>
+
+   #Preaggregation:====>
+    
+1440  is granularity
+#agar day level pe value nahi dikh rahi to "60" dena hai
+#agar weekly level pe nahi dikh rahi to 1440 dena hai
+#when aggr to be run on hourly level then granularity will be 15
+
+201608210000 date will be end date
+data agar 201803271000 hour ka nahi dikh raha 
+to 201803271100 hour dena hai
+aur 20180327 day level pe nahi dikh raha
+
+For aggregation for week level then end date will be->
+
+agar week 4th amrch to 11th march kai
+to 12th march ka 00 hour
+201803120000 
+
+===================================================================================================================================================
+Manual Pre aggregation Steps->
+
+#Preaggregation:====>
+   
+1>under shell/support run beow command:===>
+echo "select cd.id,cdg.time_granularity,cd.integral_type from counter_def_gran cdg, counter_def cd, import_counter_for icf where cd.id=cdg.idf_counter_def and cdg.id=icf.idf_counter_def_gran and icf.idf_vendor_moc_def=550000 and cdg.aggregation_bean_class='com.mycom.etl.agent.PreAggrMDDSCounterImport'"  |./o.sh > /tmp/xxx/preaggr_counter_to_msc.txt
+
+2> run below command
+cat /tmp/xxx/preaggr_counter_to_msc.txt | sed "s/\"//g" > /tmp/xxx/preaggr_counter_to_msc.txt2
+
+3> run below command:
+mv /tmp/xxx/preaggr_counter_to_msc.txt2 /tmp/xxx/preaggr_counter_to_msc.txt
+
+also remove 1st line of ""/tmp/xxx/preaggr_counter_to_msc.txt"" .txt file and then continue with below step
+
+4> run below aggregation command for current day
+
+./ManualPreAggregation.sh 550000 <MissingHour> /tmp/xxx/preaggr_counter_to_msc.txt
+./ManualAggregation.sh -d ercs_mscn_nr14.1 -g 60 -e 201611240930 for current day
+./ManualAggregation -d <VTI_Name> -e <end date> -g <granularity> 
+
+===================================================================================================================================================
+For Auto Enrichment Files->
+
+1)Go to /opt/mycom/data/enrichment/scripts/Automation Path
+2)here go to specified folder if you know which type of file is getting enriched[NLD/NOKIA etc]
+3)inside that folder do grep -i "filename.csv" *
+4)it will give the script name that is doing that enrichment
+5)READ that script and understand how that enrichment is taking place
+6)Note down the Path from where that script is taking Updated file for Enrichment
+7)Try to figure out from where that Updated file is coming on the path which is mentioned in script
+8)File could come from OSS Directly to that Path or it could come from Scheduled Report
+9)In case of OSS search for that keyword in Ftp File and login to that OSS to check whether that file is present or not
+10)In Case of scheduled report figure out from which scheduled report this enrichment file is coming
+11)for this case u can try to grep that attribute in /data/scheduled_reports/ Path all files
+
+==================================================================================================================================================
+Scheduled Reports->
+
+TO PREDEFINE A REPORT->
+1)User Manager->Features->Edit Features->Edit(Bottom Right)
+2)on Right Half[Available Report] ->Drag and Drop report to left Side to any Path (does'nt matter much however if possible ask client where to predefine it)
+3)After Predifining a Report
+4)Go to Features->Scheduled Reports
+5)Go to Add(In case a new Report has to be scheduled)[Bottom Right]
+6)Choose->select which predefined report has to be scheduled
+7)nure the timing for which u want to schedule
+8)Select the source of Delivery[Disk /E-mail]
+9)Name you report
+10)Select ok and your report will be scheduled
+
+=================================================================================================================================================
+ERCS 3G Hierarch Structure[For checking Attriute Entity]->
+
+fddcell --> sector --> NodeB --> RNC
+
+Parent attribute of Fddcell ==> CM1_NodeBFunction,vsDataRbsLocalCell|Duplicated_AE  (ID : 507555195)
+
+
+===============================================================================================================================================
+To check/change Thread[Write/Extract/Transform] count of a Server->
+
+1)Server/Xlgeo-Shared
+2)ll Write*.properties
+3)Vi that file and check for Write_rt or Write_late thread count
+
+==========================================================================================================================================
+
+Flat Files PAth in Mycom->
+/opt/mycom/data/flatfiles/V2/VTI Version/
+
+============================================================================================================================================
+
+Query to find list of all users->
+
+Use it in PF01 server.
+
+********DUMP OF MYCOM USERS *******QUERY*****
+
+Run it under “/opt/mycom/shell/support” path
+
+echo "select DESCRIPTION,LOGIN from USER_PROFILE" | ./o.sh>> User.csv
+
+echo "select * from USER_PROFILE" | ./o.sh
+
+==============================================================================================================================================
+
+Flat Files Compress[Command to compress Flat Files]->
+
+/opt/mycom/shell/support/FlatFileCompact2.sh /opt/mycom/data/flatfiles/V2/nkia_enodeb_xml_nlte16sr/eCell-Nokia-Day/standard/20180131 -c=FASTLZ -Commit
+
+
+the argument that we are passing to this script should vary/change depending upon whch flat file path/vti flat file path you want to compress
+
+===============================================================================================================================================
+
+To Kill a PID->
+
+kill -9 PID
+
+=====================================================================================================================================================
+
+To check License/ Count of users acccessing Mycom at a time ->
+
+1) got to /opt/mycom/logs
+
+2) zgrep -h Client.Web_Dashboard Lic* | grep remaining | cut -f 1,2,3,6,7,8,9,10,11 -d' ' | sort -n
+
+=======================================================================================================================================================
+
+HWI 4G Data Loading Check->
+
+Report/YogeshS/HWI/4G HWI Traffic Check
+
+========================================================================================================================================================
+
+Command To check whether file is already downloaded by another source[same file getting downloaded from different sources]->
+
+grep "File already downloaded by another source" Extract*201804091* | cut -d "/" -f10 | sort | uniq | wc -l
+
+======================================================================================================================================================
+
+Path in Mycom for Jar File->
+
+/opt/mycom/shell/support/SCAD
+/opt/mycom/shell/support/SCAD+
+
+===============================================================================================================================================
+
+To check when the report is created or who modified this report last->
+
+1)in Pallete[Network Elements->NIMS Proptima->Server->Report
+2) in that search for your report name and drag drop to blank report
+3)now this report will behave like an NE and we can add attributes to it to find creation date, last modified etc.
+
+======================================================================================================================================================
+
+In case if a report gets corrupted then we can get that report restored from Storage team by raising a request to them->
+
+To raise request to storage team to recover that report 
+(1) Path of the report to be restored->(Source Path)
+    [PF01(10.115.1.40) : [/opt/mycom/SHARED_NFS/mycom_federation
+    /work/report](since it is a federation setup we can mention any server)()
+(2)Destinaton Path
+	you can give data path on PR09 to test whether restored report is opening or not if it is opening the we can copy tht restored report
+	to the required server.
+
+==================================================================================================================================================
+
+Nmae of Files for changing PIDs->
+
+2/   ps -ef | egrep -i 'Dmycmreg|DLicMgr|Dmycomtomcat|Dmddsserver|Dmddsserver1|Dmycom-sched|Dmycom-alarm|Detl-preaggrformula|Djoram|Detl-dimg|
+Detl-extr|Detl-trnf|Detl-load|Detl-writ|Djmsserverip|Dmycomipsvrma|Dmycomipcollma|Dmycom-admc|Delasticsearch'
+
+=====================================================================================================================================================
+
+How to check in which server a KPI was created->
+
+1)under xlgeo-shared path
+2)cat nims-xlgeo.conf
+3)in this file there is column named id-range[which includes the range of id of KPI in that particular server]
+4)now get the id of KPI for which we are searching
+5)check in nims-xlgeo.conf file under which id range your KPI id falls;accordingly we can find the server in which that KPI was created.
+
+===================================================================================================================================
+
+Path for lic.cry file->
+
+/opt/mycom/exe
+
+===================================================================================================================================
